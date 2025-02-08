@@ -1,95 +1,62 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+'use client'
+
+import { use, useState } from "react";
+import { AppContext } from "@/app/providers/app-provider";
+import Header from "@/app/components/Header";
+import { ResponsiveFilter } from "./components/Filter";
+import { DogSearchParams, Sort } from "@/app/lib/api/dogs";
+import { useGetDogs } from "@/app/hooks/useGetDogs";
+import DogCard from "@/app/components/DogCard";
+import { useGetDogsInfo } from "@/app/hooks/useGetDogsInfo";
+import { createListCollection, Flex } from "@chakra-ui/react";
+import { SelectContent, SelectItem, SelectRoot, SelectTrigger, SelectValueText } from "@/components/ui/select";
+import { BodyContainer } from "./components/BodyContainer";
+
+const sortByOptions = createListCollection({
+  items: [
+    { label: "Ascending name", value: "name:asc" },
+    { label: "Ascending breed", value: "breed:asc" },
+    { label: "Ascending age", value: "age:asc" },
+    { label: "Descending name", value: "name:desc" },
+    { label: "Descending breed", value: "breed:desc" },
+    { label: "Descending age", value: "age:desc" },
+  ],
+})
 
 export default function Home() {
-  return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>app/page.tsx</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const { user } = use(AppContext);
+  const [filterState, setFilterState] = useState<DogSearchParams>({ageMin: 0, ageMax: 35});
+  const [sortBy, setSortBy] = useState<Sort | undefined>();
+  const { data } = useGetDogs(filterState, sortBy);
+  const dogIds = data?.pages.flatMap(page => page.resultIds) ?? [];
+  const { data: dogs } = useGetDogsInfo(dogIds);
 
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+  return (
+    <div>
+      <Header/>
+      <BodyContainer>
+        <Flex justifyContent='space-between'>
+        <ResponsiveFilter filterState={filterState} setFilterState={setFilterState} />
+        <SelectRoot
+          collection={sortByOptions}
+          width="200px"
+          value={[sortBy as string]}
+          onValueChange={(e) => setSortBy(e.value[0] as Sort)}
+      >
+        <SelectTrigger clearable>
+          <SelectValueText placeholder="Sort By" />
+        </SelectTrigger>
+        <SelectContent>
+          {sortByOptions.items.map((sortByOption) => (
+            <SelectItem item={sortByOption} key={sortByOption.value}>
+              {sortByOption.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </SelectRoot>
+      </Flex>
+      {dogs?.map(dog => <DogCard key={dog.id} name={dog.name} age={dog.age} breed={dog.breed} zipCode={dog.zip_code} imageUrl={dog.img} />)}
+      </BodyContainer>
     </div>
   );
 }
