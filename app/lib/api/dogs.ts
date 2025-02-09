@@ -29,17 +29,18 @@ export type Sort = 'breed:asc' | 'name:asc' | 'age:asc' | 'breed:desc' | 'name:d
 
 export const fetchDogs = async (
     queryParams: DogSearchParams,
-    from?: string,
-    sort?: Sort
+    from: string | undefined,
+    sort?: Sort,
   ) : Promise<FetchDogsResponse> => {
     try {
-        const response = await apiClient.get('/dogs/search', {
+    const derivedFrom = from ? new URLSearchParams(from?.split('?')[1]).get('from'): undefined;
+      const response = await apiClient.get('/dogs/search', {
             params: {
                 ...queryParams, // Include the queryParams object
-                ...(from && { from }), // Only include if defined
+                ...(from && { from: derivedFrom }), // Only include if defined
                 ...(sort && { sort }),
             }
-          });
+      });
         return response.data;
       } catch (error) {
         console.error('Error fetching data:', error);

@@ -8,22 +8,27 @@ export const useGetDogsInfo = (ids: string[]) => {
     return useQuery({
         queryKey: ['dogs-info', ids], 
         queryFn: async () => {
-            // 🔍 Check if the full list is already cached
-            const cachedData = queryClient.getQueryData<Dog[]>(['dogs-info', ids]);
+            const cachedDogs = queryClient.getQueryData<Dog[]>(['dogs-info']) || [];
+            const cachedDogsMap = new Map(cachedDogs.map(dog => [dog.id, dog]));
 
-            if (cachedData) {
-                return cachedData; // Return cached data immediately
-            }
+            // Filter out already cached IDs
+            const newIds = ids.filter(id => !cachedDogsMap.has(id));
 
-            // 🛜 Fetch fresh data from API if not cached
-            const freshData = await fetchDogsInfo(ids);
-            
-            // ✅ Store the fetched data in the cache
-            queryClient.setQueryData(['dogs-info', ids], freshData);
+            // Fetch only the missing dogs
+            const freshDogs = newIds.length > 0 ? await fetchDogsInfo(newIds) : [];
 
-            return freshData;
+            // Merge new data with cached data
+            freshDogs.forEach(dog => cachedDogsMap.set(dog.id, dog));
+
+            // Update cache with merged data
+            const updatedDogs = Array.from(cachedDogsMap.values());
+            queryClient.setQueryData(['dogs-info'], updatedDogs);
+
+            // 🔄 Sort dogs based on the original `ids` order
+            return ids.map(id => cachedDogsMap.get(id)!);
         },
         enabled: ids.length > 0, // Prevents unnecessary fetches
         staleTime: 1000 * 60 * 10, // Keep data fresh for 10 minutes
+        placeholderData: (prev) => prev,
     });
 };

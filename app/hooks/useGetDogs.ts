@@ -5,8 +5,8 @@ export const useGetDogs = (queryParams: DogSearchParams, sort?: Sort) => {
     return useInfiniteQuery<FetchDogsResponse, unknown>({
         queryKey: ['dogs', queryParams, sort],
         initialPageParam: undefined,
-        queryFn: ({ pageParam }) => fetchDogs(queryParams, pageParam as string | undefined, sort), // Using fetchDogs without modifications
-        getNextPageParam: (lastPage) => lastPage.next, // Use the `next` field for pagination
+        queryFn: ({ pageParam }) => fetchDogs(queryParams, pageParam as string | undefined, sort),
+        getNextPageParam: (lastPage) => lastPage.next,
         getPreviousPageParam: (firstPage) => firstPage.prev,
     });
 };
