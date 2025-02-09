@@ -13,6 +13,7 @@ import {
     DialogTitle,
   } from "@/components/ui/dialog";
 import { Avatar } from "@/components/ui/avatar";
+import { User } from "@/app/types/user";
 
 const MatchDogDialog = ({dog, name, open, setOpen}: {dog: Dog, name: string, open: boolean,setOpen: (isOpen: boolean) => void }) => {
     return (<DialogRoot lazyMount open={open} onOpenChange={(e) => setOpen(e.open)}>
@@ -65,3 +66,5 @@ export const FindAMatch = memo(({dogsFavourite, user}: {dogsFavourite: string[],
         {dogs && <MatchDogDialog dog={dogs[0]} name={user.name} open={open} setOpen={setOpen}  />}
         </>);
 });
+
+FindAMatch.displayName = 'FindAMatch';

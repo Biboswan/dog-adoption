@@ -13,6 +13,7 @@ import { SelectContent, SelectItem, SelectRoot, SelectTrigger, SelectValueText }
 import { BodyContainer } from "./components/BodyContainer";
 import { AppContext } from "@/app/providers/app-provider";
 import { FindAMatch } from "@/app/components/FindAMatch";
+import { User } from "@/app/types/user";
 
 const sortByOptions = createListCollection({
   items: [
@@ -29,7 +30,6 @@ const sortByOptions = createListCollection({
 
 export default function Home() {
   const {dogsFavourite, favouriteDog, unfavouriteDog, user} = use(AppContext);
-  if (!user) return null;
   const [filterState, setFilterState] = useState<DogSearchParams>({ageMin: 0, ageMax: 35});
   const [sortBy, setSortBy] = useState<Sort | undefined>();
   const { data, fetchNextPage,
@@ -79,7 +79,7 @@ export default function Home() {
       </SelectRoot>
       </Flex>
       <Flex m={{ base: 4, md: 6, lg: 8 }} justifyContent='center'>
-        <FindAMatch user={user} dogsFavourite={dogsFavourite}/>
+        <FindAMatch user={user as User} dogsFavourite={dogsFavourite}/>
       </Flex>
       <Flex 
       justifyContent='space-around'
