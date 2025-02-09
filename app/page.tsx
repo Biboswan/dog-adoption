@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from "react";
+import { use, useCallback, useEffect, useMemo, useState } from "react";
 import { useIntersection } from '@mantine/hooks'
 import Header from "@/app/components/Header";
 import { ResponsiveFilter } from "./components/Filter";
@@ -11,6 +11,7 @@ import { useGetDogsInfo } from "@/app/hooks/useGetDogsInfo";
 import { createListCollection, Flex, Spinner } from "@chakra-ui/react";
 import { SelectContent, SelectItem, SelectRoot, SelectTrigger, SelectValueText } from "@/components/ui/select";
 import { BodyContainer } from "./components/BodyContainer";
+import { AppContext } from "./providers/app-provider";
 
 const sortByOptions = createListCollection({
   items: [
@@ -24,6 +25,7 @@ const sortByOptions = createListCollection({
 })
 
 export default function Home() {
+  const {dogsFavourite, favouriteDog, unfavouriteDog} = use(AppContext);
   const [filterState, setFilterState] = useState<DogSearchParams>({ageMin: 0, ageMax: 35});
   const [sortBy, setSortBy] = useState<Sort | undefined>();
   const { data, fetchNextPage,
@@ -43,6 +45,10 @@ export default function Home() {
       fetchNextPage();
     }
   }, [entry?.isIntersecting, fetchNextPage, hasNextPage, isFetchingNextPage, dogs?.length]);
+
+  const toggleFavourite = useCallback((isFavourite: boolean, id: string) => {
+    isFavourite ? unfavouriteDog(id): favouriteDog(id);
+  },[]);
 
   return (
     <div>
@@ -73,7 +79,19 @@ export default function Home() {
       columnGap={8}
       rowGap={8}
       wrap="wrap">
-      {dogs?.map(dog => <DogCard key={dog.id} name={dog.name} age={dog.age} breed={dog.breed} zipCode={dog.zip_code} imageUrl={dog.img} />)}
+      {dogs?.map(dog => {
+        const dogId = dog.id;
+        const isFavourite = dogsFavourite.some(id => id === dogId);
+        return <DogCard
+        id={dogId}
+        key={dogId}
+        isFavourite={isFavourite}
+        toggleFavourite={toggleFavourite}
+        name={dog.name}
+        age={dog.age}
+        breed={dog.breed}
+        zipCode={dog.zip_code}
+        imageUrl={dog.img} />})}
       {!isLoadingDogsInfo && <div  ref={dummyItemRef} />}
       </Flex>
       {isLoadingDogsInfo && (

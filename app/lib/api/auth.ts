@@ -11,6 +11,7 @@ export const login = async (email: string, name: string) => {
         const now = new Date();
         now.setHours(now.getHours() + 1);
         localStorage.setItem('expiryTime',now.toString());
+        localStorage.setItem('favouriteDogIds',JSON.stringify([]));
 
         return response.data;
       } catch (error) {
@@ -24,18 +25,10 @@ export const logout = async () => {
 
         localStorage.removeItem('user');
         localStorage.removeItem('expiryTime');
+        localStorage.removeItem('favouriteDogIds');
 
         return response.data;
       } catch (error) {
         console.error('Error fetching data:', error);
       }
-}
-
-export const checkAuth = async () => {
-  try {
-      const response = await apiClient.post('/auth/checkAuth');
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
 }

@@ -32,17 +32,19 @@ type Props = {
     children: React.JSX.Element
 };
 
-
 export const AppProvider = ({ children }: Props) => {
     const [user, setUser] = useState<User | null>(JSON.parse(localStorage.getItem('user') ?? ''));
-    const [dogsFavourite, setDogsFavourite] = useState<string[]>([]);
+    const [dogsFavourite, setDogsFavourite] = useState<string[]>(JSON.parse(localStorage.getItem('favouriteDogIds') ?? '[]'));
 
     // Function to favorite a dog
     const favouriteDog = useCallback((id: string) => {
         setDogsFavourite((prevFavourites) => {
             // Add dog ID if not already in favorites
             if (!prevFavourites.includes(id)) {
-                return [...prevFavourites, id];
+                const newFavouriteDogs = [...prevFavourites, id];
+
+                localStorage.setItem('favouriteDogIds',JSON.stringify(newFavouriteDogs));
+                return newFavouriteDogs;
             }
             return prevFavourites; // If already favorited, do nothing
         });
@@ -52,7 +54,9 @@ export const AppProvider = ({ children }: Props) => {
     const unfavouriteDog = useCallback((id: string) => {
         setDogsFavourite((prevFavourites) => {
             // Remove dog ID from favorites
-            return prevFavourites.filter((dogId) => dogId !== id);
+            const newFavouriteDogs = prevFavourites.filter((dogId) => dogId !== id);
+            localStorage.setItem('favouriteDogIds',JSON.stringify(newFavouriteDogs));
+            return newFavouriteDogs;
         });
     },[]);
 
