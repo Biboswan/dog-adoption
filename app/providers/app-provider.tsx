@@ -1,8 +1,7 @@
 'use client'
 
-import { createContext, useCallback, useEffect, useState  } from "react";
+import { createContext, useCallback, useState  } from "react";
 import { logout } from "@/app/lib/api/auth";
-import { useRouter } from "next/navigation";
 
 interface User {
     name: string;
@@ -33,22 +32,10 @@ type Props = {
     children: React.JSX.Element
 };
 
-export const AppProvider = ({ children }: Props) => {
-    const [user, setUser] = useState<User | null>(null);
-    const [dogsFavourite, setDogsFavourite] = useState<string[]>([]);
-    const router = useRouter();
 
-    useEffect(() => {
-        const now = new Date();
-        const expiryTime = localStorage.getItem('expiryTime');
-        if (!expiryTime || (now>new Date(expiryTime))) {
-            router.push('/login');
-            //return redirect('/login');
-        } else {
-            const userCredentials = localStorage.getItem('user');
-            userCredentials && setUser(JSON.parse(userCredentials));
-        }
-    },[]);
+export const AppProvider = ({ children }: Props) => {
+    const [user, setUser] = useState<User | null>(JSON.parse(localStorage.getItem('user') ?? ''));
+    const [dogsFavourite, setDogsFavourite] = useState<string[]>([]);
 
     // Function to favorite a dog
     const favouriteDog = useCallback((id: string) => {
@@ -73,7 +60,7 @@ export const AppProvider = ({ children }: Props) => {
         await logout();
         setUser(null);
         setDogsFavourite([]);
-    },[])
+    },[]);
 
     return <AppContext value={{user, logout: handleLogout, setUser, dogsFavourite, favouriteDog, unfavouriteDog}}>{children}</AppContext>;
 };
