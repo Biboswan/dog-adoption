@@ -11,7 +11,8 @@ import { useGetDogsInfo } from "@/app/hooks/useGetDogsInfo";
 import { createListCollection, Flex, Spinner } from "@chakra-ui/react";
 import { SelectContent, SelectItem, SelectRoot, SelectTrigger, SelectValueText } from "@/components/ui/select";
 import { BodyContainer } from "./components/BodyContainer";
-import { AppContext } from "./providers/app-provider";
+import { AppContext } from "@/app/providers/app-provider";
+import { FindAMatch } from "@/app/components/FindAMatch";
 
 const sortByOptions = createListCollection({
   items: [
@@ -27,7 +28,8 @@ const sortByOptions = createListCollection({
 //Todo: Use React Window for more optimising large lists
 
 export default function Home() {
-  const {dogsFavourite, favouriteDog, unfavouriteDog} = use(AppContext);
+  const {dogsFavourite, favouriteDog, unfavouriteDog, user} = use(AppContext);
+  if (!user) return null;
   const [filterState, setFilterState] = useState<DogSearchParams>({ageMin: 0, ageMax: 35});
   const [sortBy, setSortBy] = useState<Sort | undefined>();
   const { data, fetchNextPage,
@@ -75,6 +77,9 @@ export default function Home() {
           ))}
         </SelectContent>
       </SelectRoot>
+      </Flex>
+      <Flex m={{ base: 4, md: 6, lg: 8 }} justifyContent='center'>
+        <FindAMatch user={user} dogsFavourite={dogsFavourite}/>
       </Flex>
       <Flex 
       justifyContent='space-around'

@@ -21,6 +21,7 @@ import { Dispatch, SetStateAction, useMemo, useState } from "react";
 import { DogSearchParams } from "@/app/lib/api/dogs";
 import { memo } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import { MAX_AGE } from "@/app/app-constants";
 
 type FilterProps = {
     filterState: DogSearchParams,
@@ -74,7 +75,7 @@ ResponsiveFilter.displayName = 'ResponsiveFilter';
 
 const Filter = memo(({filterState, setFilterState }: FilterProps) => {
   const { data } = useDogBreeds();
-  const { ageMin = 0, ageMax = 32 } = filterState;
+  const { ageMin = 0, ageMax = MAX_AGE } = filterState;
 
   const breeds = useMemo(() => {
     return createListCollection({
@@ -93,7 +94,7 @@ const Filter = memo(({filterState, setFilterState }: FilterProps) => {
       <SelectTrigger>
         <SelectValueText placeholder="Affenpinscher" />
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent zIndex={1600}>
         {breeds.items.map((breed: string) => (
           <SelectItem item={breed} key={breed}>
             {breed}
@@ -102,12 +103,12 @@ const Filter = memo(({filterState, setFilterState }: FilterProps) => {
       </SelectContent>
     </SelectRoot>
     <Slider width="200px"  
-        value={[ageMin ?? 0, ageMax ?? 35]}
+        value={[ageMin ?? 0, ageMax ?? MAX_AGE]}
         onValueChange={e => {
             setFilterState(state => ({...state, ageMin: e.value[0], ageMax: e.value[1]}));
         }}
         marks={[{value: ageMin, label: ageMin}, { label: ageMax, value: ageMax}]}
-        min={0} max={35} label="Select Age Range"/>
+        min={0} max={MAX_AGE} label="Select Age Range"/>
     </>
     )
 });
