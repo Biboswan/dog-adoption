@@ -1,7 +1,8 @@
 import { Box, Image, Text, IconButton, VStack, HStack } from "@chakra-ui/react";
 import { Heart } from "lucide-react";
+import { memo } from "react";
 
-const DogCard = ({ name, age, breed, zipCode, imageUrl }: { 
+const DogCard = memo(({ name, age, breed, zipCode, imageUrl }: { 
     name: string;
     age: number;
     breed: string;
@@ -47,6 +48,6 @@ const DogCard = ({ name, age, breed, zipCode, imageUrl }: {
             </VStack>
         </Box>
     );
-};
+});
 
 export default DogCard;

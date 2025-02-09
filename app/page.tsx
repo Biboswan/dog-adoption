@@ -1,14 +1,14 @@
 'use client'
 
-import { use, useState } from "react";
-import { AppContext } from "@/app/providers/app-provider";
+import { useEffect, useMemo, useState } from "react";
+import { useIntersection } from '@mantine/hooks'
 import Header from "@/app/components/Header";
 import { ResponsiveFilter } from "./components/Filter";
 import { DogSearchParams, Sort } from "@/app/lib/api/dogs";
 import { useGetDogs } from "@/app/hooks/useGetDogs";
 import DogCard from "@/app/components/DogCard";
 import { useGetDogsInfo } from "@/app/hooks/useGetDogsInfo";
-import { createListCollection, Flex } from "@chakra-ui/react";
+import { createListCollection, Flex, Spinner } from "@chakra-ui/react";
 import { SelectContent, SelectItem, SelectRoot, SelectTrigger, SelectValueText } from "@/components/ui/select";
 import { BodyContainer } from "./components/BodyContainer";
 
@@ -24,12 +24,25 @@ const sortByOptions = createListCollection({
 })
 
 export default function Home() {
-  const { user } = use(AppContext);
   const [filterState, setFilterState] = useState<DogSearchParams>({ageMin: 0, ageMax: 35});
   const [sortBy, setSortBy] = useState<Sort | undefined>();
-  const { data } = useGetDogs(filterState, sortBy);
-  const dogIds = data?.pages.flatMap(page => page.resultIds) ?? [];
-  const { data: dogs } = useGetDogsInfo(dogIds);
+  const { data, fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+     } = useGetDogs(filterState, sortBy);
+  const dogIds = useMemo(() => data?.pages.flatMap(page => page.resultIds) ?? [],[data?.pages]);
+  const { data: dogs, isLoading: isLoadingDogsInfo } = useGetDogsInfo(dogIds);
+
+  const { ref: dummyItemRef, entry } = useIntersection({
+    root: null,
+    threshold: 0.8,
+  });
+
+  useEffect(() => {
+    if (entry?.isIntersecting && hasNextPage && !isLoadingDogsInfo && dogs && dogs.length > 0) {
+      fetchNextPage();
+    }
+  }, [entry?.isIntersecting, fetchNextPage, hasNextPage, isFetchingNextPage, dogs?.length]);
 
   return (
     <div>
@@ -55,7 +68,26 @@ export default function Home() {
         </SelectContent>
       </SelectRoot>
       </Flex>
+      <Flex 
+      justifyContent='space-around'
+      columnGap={8}
+      rowGap={8}
+      wrap="wrap">
       {dogs?.map(dog => <DogCard key={dog.id} name={dog.name} age={dog.age} breed={dog.breed} zipCode={dog.zip_code} imageUrl={dog.img} />)}
+      {!isLoadingDogsInfo && <div  ref={dummyItemRef} />}
+      </Flex>
+      {isLoadingDogsInfo && (
+          <Flex justifyContent="center" py={4}>
+            <Spinner  color="colorPalette.600" size="lg" />
+          </Flex>
+        )}
+        
+        {/* No more dogs message */}
+        {!hasNextPage && dogs && dogs.length > 0 && (
+          <Flex justifyContent="center" py={4}>
+            No more dogs to load
+          </Flex>
+        )}
       </BodyContainer>
     </div>
   );
