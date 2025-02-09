@@ -107,7 +107,7 @@ const Filter = memo(({filterState, setFilterState }: FilterProps) => {
             setFilterState(state => ({...state, ageMin: e.value[0], ageMax: e.value[1]}));
         }}
         marks={[{value: ageMin, label: ageMin}, { label: ageMax, value: ageMax}]}
-        min={0} max={20} label="Select Age Ranger"/>
+        min={0} max={35} label="Select Age Range"/>
     </>
     )
 });
