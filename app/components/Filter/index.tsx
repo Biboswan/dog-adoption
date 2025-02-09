@@ -27,7 +27,7 @@ type FilterProps = {
     setFilterState:  Dispatch<SetStateAction<DogSearchParams>>;
 };
 
-export const ResponsiveFilter = ({ filterState, setFilterState }: FilterProps) => {
+export const ResponsiveFilter = memo(({ filterState, setFilterState }: FilterProps) => {
     const [isOpen, setIsOpen] = useState(false);
     
     // Conditionally show filters based on screen size
@@ -68,10 +68,11 @@ export const ResponsiveFilter = ({ filterState, setFilterState }: FilterProps) =
         )}
       </Box>
     );
-  };
-  
+});
 
-export const Filter = memo(({filterState, setFilterState }: FilterProps) => {
+ResponsiveFilter.displayName = 'ResponsiveFilter';
+
+const Filter = memo(({filterState, setFilterState }: FilterProps) => {
   const { data } = useDogBreeds();
   const { ageMin = 0, ageMax = 32 } = filterState;
 
@@ -110,3 +111,5 @@ export const Filter = memo(({filterState, setFilterState }: FilterProps) => {
     </>
     )
 });
+
+Filter.displayName = 'Filter';

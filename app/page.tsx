@@ -24,6 +24,8 @@ const sortByOptions = createListCollection({
   ],
 })
 
+//Todo: Use React Window for more optimising large lists
+
 export default function Home() {
   const {dogsFavourite, favouriteDog, unfavouriteDog} = use(AppContext);
   const [filterState, setFilterState] = useState<DogSearchParams>({ageMin: 0, ageMax: 35});
@@ -47,7 +49,7 @@ export default function Home() {
   }, [entry?.isIntersecting, fetchNextPage, hasNextPage, isFetchingNextPage, dogs?.length]);
 
   const toggleFavourite = useCallback((isFavourite: boolean, id: string) => {
-    isFavourite ? unfavouriteDog(id): favouriteDog(id);
+    return isFavourite ? unfavouriteDog(id): favouriteDog(id);
   },[]);
 
   return (

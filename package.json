@@ -21,6 +21,7 @@
     "lucide-react": "^0.474.0",
     "next": "15.1.6",
     "next-themes": "^0.4.4",
+    "prettier": "^3.5.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.54.2",
@@ -34,6 +35,19 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.1.6",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.4.3",
     "typescript": "^5"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "**/*.{js,ts,tsx}": [
+      "eslint --fix",
+      "prettier --single-quote --write"
+    ]
   }
 }

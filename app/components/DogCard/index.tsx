@@ -58,4 +58,6 @@ const DogCard = memo(({ id, name, age, breed, zipCode, imageUrl, isFavourite, to
     );
 });
 
+DogCard.displayName = "DogCard"; 
+
 export default DogCard;

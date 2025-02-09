@@ -15,7 +15,7 @@ const Container = styled.header`
 `;
 
 export default function Header() {
-    const { user, logout, dogsFavourite } = use(AppContext);
+    const { user, logout } = use(AppContext);
     
     return (
         <Container>
