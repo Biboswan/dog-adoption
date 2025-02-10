@@ -20,12 +20,12 @@ const DogCard = memo(({ id, name, age, breed, zipCode, imageUrl, isFavourite, to
             borderRadius="md" 
             boxShadow="md" 
             overflow="hidden" 
-            maxW="250px"
+            width={250}
             textAlign="center"
         >
             {/* Image Container */}
             <Box position="relative">
-                <Image src={imageUrl} alt={name} width="100%" height="auto" objectFit="cover" aspectRatio="1/1"
+                <Image src={imageUrl} alt={name} width="100%" height="auto" objectFit="contain" aspectRatio="1/1"
                     maxHeight="200px" />
             </Box>
 
