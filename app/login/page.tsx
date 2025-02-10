@@ -51,7 +51,7 @@ export default function Login() {
     <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
         <Container>
         <Stack gap="8" maxW="sm" css={{ "--field-label-width": "96px" }}>
-          <Heading>Welcome to the Dog Adoption App</Heading>
+          <Heading textAlign='center'>Welcome to the Dog Adoption App</Heading>
           <form onSubmit={handleSubmit(onSubmit)}>
           <Stack gap="8" maxW="sm" css={{ "--field-label-width": "96px" }}>
               {/* Name Field */}

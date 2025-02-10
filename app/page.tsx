@@ -3,35 +3,25 @@
 import { use, useCallback, useEffect, useMemo, useState } from "react";
 import { useIntersection } from '@mantine/hooks'
 import Header from "@/app/components/Header";
-import { ResponsiveFilter } from "./components/Filter";
+import { ResponsiveFilter } from "@/app/components/Filter";
 import { DogSearchParams, Sort } from "@/app/lib/api/dogs";
 import { useGetDogs } from "@/app/hooks/useGetDogs";
 import DogCard from "@/app/components/DogCard";
 import { useGetDogsInfo } from "@/app/hooks/useGetDogsInfo";
-import { createListCollection, Flex, Spinner } from "@chakra-ui/react";
+import {  Flex, Spinner } from "@chakra-ui/react";
 import { SelectContent, SelectItem, SelectRoot, SelectTrigger, SelectValueText } from "@/components/ui/select";
-import { BodyContainer } from "./components/BodyContainer";
+import { BodyContainer } from "@/app/components/BodyContainer";
 import { AppContext } from "@/app/providers/app-provider";
 import { FindAMatch } from "@/app/components/FindAMatch";
 import { User } from "@/app/types/user";
-
-const sortByOptions = createListCollection({
-  items: [
-    { label: "Ascending name", value: "name:asc" },
-    { label: "Ascending breed", value: "breed:asc" },
-    { label: "Ascending age", value: "age:asc" },
-    { label: "Descending name", value: "name:desc" },
-    { label: "Descending breed", value: "breed:desc" },
-    { label: "Descending age", value: "age:desc" },
-  ],
-})
+import { defaultSortBy, sortByOptions } from "@/app/app-constants";
 
 //Todo: Use React Window for more optimising large lists
 
 export default function Home() {
   const {dogsFavourite, favouriteDog, unfavouriteDog, user} = use(AppContext);
   const [filterState, setFilterState] = useState<DogSearchParams>({ageMin: 0, ageMax: 35});
-  const [sortBy, setSortBy] = useState<Sort | undefined>();
+  const [sortBy, setSortBy] = useState<Sort | undefined>(defaultSortBy);
   const { data, fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
