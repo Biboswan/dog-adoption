@@ -32,8 +32,13 @@ type Props = {
     children: React.JSX.Element
 };
 
+const initializeUser = () => {
+    const user = localStorage.getItem('user');
+    return user ? JSON.parse(user) : null;
+};
+
 export const AppProvider = ({ children }: Props) => {
-    const [user, setUser] = useState<User | null>(JSON.parse(localStorage.getItem('user') ?? ''));
+    const [user, setUser] = useState<User | null>(initializeUser());
     const [dogsFavourite, setDogsFavourite] = useState<string[]>(JSON.parse(localStorage.getItem('favouriteDogIds') ?? '[]'));
 
     // Function to favorite a dog
