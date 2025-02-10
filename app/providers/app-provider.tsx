@@ -2,6 +2,7 @@
 
 import { createContext, useCallback, useState  } from "react";
 import { logout } from "@/app/lib/api/auth";
+import { useRouter } from "next/navigation";
 
 interface User {
     name: string;
@@ -15,6 +16,7 @@ interface AppContextType {
     favouriteDog: (id: string) => void;
     unfavouriteDog: (id: string) => void;
     logout: () => void;
+    setDogsFavourite: (favourites: string[]) => void;
 }
 
 const defaultState: AppContextType = {
@@ -23,7 +25,8 @@ const defaultState: AppContextType = {
     dogsFavourite: [],
     favouriteDog: () => {},
     unfavouriteDog: () => {},
-    logout: () => {}
+    logout: () => {},
+    setDogsFavourite: () => {}
 };
 
 export const AppContext = createContext<AppContextType>(defaultState);
@@ -40,6 +43,7 @@ const initializeUser = () => {
 export const AppProvider = ({ children }: Props) => {
     const [user, setUser] = useState<User | null>(initializeUser());
     const [dogsFavourite, setDogsFavourite] = useState<string[]>(JSON.parse(localStorage.getItem('favouriteDogIds') ?? '[]'));
+    const router = useRouter();
 
     // Function to favorite a dog
     const favouriteDog = useCallback((id: string) => {
@@ -65,11 +69,16 @@ export const AppProvider = ({ children }: Props) => {
         });
     },[]);
 
-    const handleLogout = useCallback(async () => {
-        await logout();
+    const resetAll = useCallback(() => {
         setUser(null);
         setDogsFavourite([]);
     },[]);
 
-    return <AppContext value={{user, logout: handleLogout, setUser, dogsFavourite, favouriteDog, unfavouriteDog}}>{children}</AppContext>;
+    const handleLogout = useCallback(async () => {
+        await logout();
+        resetAll();
+        router.push('/login');
+    },[]);
+
+    return <AppContext value={{user, logout: handleLogout, setDogsFavourite, setUser, dogsFavourite, favouriteDog, unfavouriteDog}}>{children}</AppContext>;
 };

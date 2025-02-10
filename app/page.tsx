@@ -44,6 +44,8 @@ export default function Home() {
     return isFavourite ? unfavouriteDog(id): favouriteDog(id);
   },[]);
 
+  if (!user) return null;
+
   return (
     <div>
       <Header/>

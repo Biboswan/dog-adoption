@@ -38,11 +38,12 @@ export default function Login() {
     resolver: zodResolver(schema)
     });
 
-  const { setUser } = use(AppContext);
+  const { setUser, setDogsFavourite } = use(AppContext);
 
   const onSubmit = async ({name,email}: FormValues) => {
     await login(email, name);
     setUser({email, name});
+    setDogsFavourite([]);
     redirect('/');
   };
 
